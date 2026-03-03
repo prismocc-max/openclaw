@@ -3,7 +3,7 @@ node_modules
 .env
 docker-compose.extra.yml
 dist
-# pnpm-lock.yaml is committed in this fork for reproducible Docker builds
+pnpm-lock.yaml
 bun.lock
 bun.lockb
 coverage
@@ -27,6 +27,7 @@ mise.toml
 apps/android/.gradle/
 apps/android/app/build/
 apps/android/.cxx/
+apps/android/.kotlin/
 
 # Bun build artifacts
 *.bun-build
@@ -57,7 +58,7 @@ apps/ios/*.xcfilelist
 
 # Vendor build artifacts
 vendor/a2ui/renderers/lit/dist/
-# src/canvas-host/a2ui/*.bundle.js committed in this fork for Docker builds
+src/canvas-host/a2ui/*.bundle.js
 src/canvas-host/a2ui/*.map
 .bundle.hash
 
@@ -80,9 +81,8 @@ apps/ios/*.mobileprovision
 # Local untracked files
 .local/
 docs/.local/
-# IDENTITY.md and USER.md committed in this fork for Docker builds
-# IDENTITY.md
-# USER.md
+IDENTITY.md
+USER.md
 .tgz
 .idea
 
@@ -95,7 +95,7 @@ docs/.local/
 !.agent/workflows/
 /local/
 package-lock.json
-.claude/settings.local.json
+.claude/
 .agents/
 .agents
 .agent/
