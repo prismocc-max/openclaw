@@ -3,7 +3,7 @@ node_modules
 .env
 docker-compose.extra.yml
 dist
-pnpm-lock.yaml
+# pnpm-lock.yaml is committed in this fork for reproducible Docker builds
 bun.lock
 bun.lockb
 coverage
