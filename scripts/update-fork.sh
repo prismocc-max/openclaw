@@ -45,7 +45,27 @@ echo ""
 echo "▶ Rebuilding a2ui bundle ..."
 bash "$FORK_DIR/scripts/bundle-a2ui.sh"
 
-# ── 4. Stage all changes ──────────────────────────────────────────────────────
+# ── 4. Fix upstream workflows (blacksmith runners → ubuntu-latest) ───────────
+echo ""
+echo "▶ Fixing CI workflows for personal fork ..."
+# Replace blacksmith runners
+find "$FORK_DIR/.github/workflows" -name "*.yml" -exec \
+  sed -i '' 's/runs-on: blacksmith-[a-z0-9A-Z_-]*/runs-on: ubuntu-latest/g' {} \;
+# Replace useblacksmith actions
+find "$FORK_DIR/.github/workflows" -name "*.yml" -exec \
+  sed -i '' 's|uses: useblacksmith/setup-docker-builder@v1|uses: docker/setup-buildx-action@v3|g' {} \;
+find "$FORK_DIR/.github/workflows" -name "*.yml" -exec \
+  sed -i '' 's|uses: useblacksmith/build-push-action@v2|uses: docker/build-push-action@v6|g' {} \;
+# Fix version: strip -beta.N suffix if present (e.g. 2026.3.1-beta.1 → 2026.3.1)
+CURRENT_VER=$(python3 -c "import json; print(json.load(open('$FORK_DIR/package.json'))['version'])")
+CLEAN_VER=$(echo "$CURRENT_VER" | sed 's/-beta\.[0-9]*//')
+if [[ "$CURRENT_VER" != "$CLEAN_VER" ]]; then
+  echo "  Stripping beta suffix: $CURRENT_VER → $CLEAN_VER"
+  sed -i '' "s/\"version\": \"$CURRENT_VER\"/\"version\": \"$CLEAN_VER\"/" "$FORK_DIR/package.json"
+fi
+echo "  Done."
+
+# ── 6. Stage all changes ──────────────────────────────────────────────────────
 echo ""
 echo "▶ Staging changes ..."
 git add -A
@@ -58,12 +78,12 @@ fi
 
 echo "  $CHANGED files changed."
 
-# ── 5. Commit ─────────────────────────────────────────────────────────────────
+# ── 7. Commit ─────────────────────────────────────────────────────────────────
 echo ""
 echo "▶ Committing ..."
 git commit -m "update: $VERSION"
 
-# ── 6. Push ───────────────────────────────────────────────────────────────────
+# ── 8. Push ───────────────────────────────────────────────────────────────────
 echo ""
 echo "▶ Pushing to GitHub ..."
 git push
